@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "scenario_id": "first-order-default",
+  "title": "一阶系统默认单位阶跃",
+  "request": {
+    "demo_id": "first-order-step",
+    "duration_s": 5.0,
+    "dt_s": 0.05,
+    "input_amplitude": 1.0,
+    "time_constant_s": 0.8,
+    "gain": 1.0,
+    "initial_output": 0.0
+  }
+}

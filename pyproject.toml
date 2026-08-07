@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "brave-new-world"
+version = "0.0.1"
+description = "Deterministic teaching visualizations for control and robotics"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{name = "fangzhouRWTH"}]
+dependencies = []
+
+[project.scripts]
+bnw = "brave_new_world.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"brave_new_world.ui" = ["assets/*.html", "assets/*.css", "assets/*.js"]
