@@ -75,14 +75,42 @@ def _cmd_run_scenario(arguments: argparse.Namespace) -> int:
     return 0
 
 
+def _open_browser(url: str) -> bool:
+    try:
+        opened = webbrowser.open(url, new=2)
+    except (OSError, webbrowser.Error) as exc:
+        print(
+            f"could not open the browser ({exc}); open this URL manually: {url}",
+            file=sys.stderr,
+            flush=True,
+        )
+        return False
+    if not opened:
+        print(
+            f"could not open the browser; open this URL manually: {url}",
+            file=sys.stderr,
+            flush=True,
+        )
+    return opened
+
+
 def _cmd_ui(arguments: argparse.Namespace) -> int:
-    server = create_server(arguments.port)
+    try:
+        server = create_server(arguments.port)
+    except (OSError, ValueError) as exc:
+        print(f"unable to start the teaching UI: {exc}", file=sys.stderr, flush=True)
+        print(
+            "if the port is already in use, retry with: bnw ui --port 0 --open-browser",
+            file=sys.stderr,
+            flush=True,
+        )
+        return 1
     host, port = server.server_address[:2]
     url = f"http://{host}:{port}/"
-    print(f"BraveNewWorld teaching UI: {url}")
-    print("press Ctrl+C to stop")
+    print(f"BraveNewWorld teaching UI: {url}", flush=True)
+    print("press Ctrl+C to stop", flush=True)
     if arguments.open_browser:
-        webbrowser.open(url)
+        _open_browser(url)
     try:
         server.serve_forever(poll_interval=0.25)
     except KeyboardInterrupt:

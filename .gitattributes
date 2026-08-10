@@ -1,0 +1,3 @@
+* text=auto
+bnw text eol=lf
+*.cmd text eol=crlf

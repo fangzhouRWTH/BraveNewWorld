@@ -1,5 +1,6 @@
 from http.client import HTTPConnection
 import json
+import os
 from pathlib import Path
 from threading import Thread
 import unittest
@@ -70,8 +71,9 @@ class SourceEntrypointTests(unittest.TestCase):
         import subprocess
 
         root = Path(__file__).resolve().parents[1]
+        launcher = root / ("bnw.cmd" if os.name == "nt" else "bnw")
         result = subprocess.run(
-            [str(root / "bnw"), "--help"],
+            [str(launcher), "--help"],
             cwd=root,
             check=False,
             capture_output=True,
