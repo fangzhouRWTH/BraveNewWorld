@@ -1,36 +1,45 @@
-# BNW-0 架构
+# Architecture
 
-## 目标
+## 1. 定位
 
-BNW-0 建立一个小而真实的教学产品基线：同一确定性仿真内核既服务无头验证，也服务浏览器交互。首个主题用一阶系统阶跃响应说明时间常数、增益、输入和初值。
+BraveNewWorld 是“小 App 工厂”和 JobSlayer 外部测试床，不是第二个引擎，也不是 Anygine 的分支。
+每个 App 提供一个足够具体的开发目标，使任务规划、串行执行、证据反馈和人工门禁可以在较短周期内
+反复验证。
 
-```text
-浏览器参数 ──HTTP JSON──┐
-                        ├─> SimulationRequest ─> first-order kernel ─> SimulationTrace
-无头 CLI 参数 ──────────┘                                      │
-                                                               ├─> JSON 证据
-                                                               └─> Canvas 曲线
-```
-
-## 模块边界
-
-- `contracts.py`：严格请求、轨迹点、轨迹和 demo manifest；不依赖 HTTP 或浏览器。
-- `simulation/`：纯计算。首个内核使用零阶保持下的一阶系统精确离散更新。
-- `demos/`：教学主题元数据登记，不拥有第二套时钟或仿真逻辑。
-- `ui/server.py`：loopback-only HTTP 边界、JSON 校验和静态资源服务。
-- `ui/assets/`：极简参数表单与 Canvas 呈现，只消费 API 返回的真实轨迹。
-- `cli.py`：`simulate`、`ui` 和统一本地检查入口。
-
-## 数值约定
-
-模型为 `τ dy/dt + y = K u`。输入在 `t=0` 施加并在步间保持，状态更新为：
+## 2. 依赖边界
 
 ```text
-y[k+1] = K u + (y[k] - K u) exp(-dt / τ)
+JobSlayer control plane
+  -> 固化任务 DAG、执行、验证与反馈
+  -> BraveNewWorld app repository
+       -> top-level CMake project
+       -> public Anygine::* targets
+            -> pinned Anygine source worktree
 ```
 
-请求要求 `duration / dt` 为整数且不超过 5000 步。轨迹包含 `t=0` 初值和终点，因此采样点数为步数加一。版本化 `Scenario` 固定教学输入；轨迹 JSON 使用固定字段、引擎版本、Python 运行时版本和 SHA-256 哈希支持复现。
+BraveNewWorld 通过 `add_subdirectory(ANYGINE_SOURCE_ROOT, build/anygine)` 注册固定源码 worktree。
+首阶段只允许引擎已验证的 public targets：`Anygine::Engine`、`Anygine::GraphicsVulkan`、
+`Anygine::RendererCore`、`Anygine::RuntimeAssets` 与 `Anygine::UI`。App 不复制 Anygine 源文件、
+不添加 `Private` include、也不修改引擎 checkout。
 
-## 当前边界
+## 3. App 单元
 
-BNW-0 不模拟噪声、暂停时钟或多体动力学。UI 只有“重新计算式”的运行、复位和真实 JSON 导出；没有伪造尚未实现的暂停、单步或动画状态。后续主题只有在共享契约足够时才扩展。
+一个可进入任务规划闭环的 App 至少包含：
+
+- `Config/Apps/<id>.json`：目标、入口 target、验收与验证命令；
+- `Source/Apps/<Name>/`：薄 CMake target 与实现；
+- 不依赖 GPU 的 manifest/contract check；
+- 可选的有界 Vulkan/UI smoke；
+- 对应的开发日志证据。
+
+只有第二个 App 证明存在真实复用需求后，才把重复逻辑提取为 BraveNewWorld 公共库。
+
+## 4. 版本与构建
+
+`Config/Engine.json` 与根 `CMakeLists.txt` 双重固定 Anygine commit。`Scripts/BraveNewWorld.py`
+统一 doctor、configure、build、test 与 run；CMake/CTest 仍拥有真实构建和测试语义。
+
+## 5. JobSlayer 边界
+
+BraveNewWorld 只拥有源码、App manifests 和项目内验证。任务状态、权限、重试、验证报告、审批与完成
+结论始终由 JobSlayer 的控制面和 `WorkflowKernel` 管理。

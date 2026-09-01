@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "app_id": "hello-task",
+  "display_name": "Hello Task",
+  "purpose": "Validate the smallest public Anygine window, Vulkan, renderer, and UI consumer.",
+  "cmake_target": "BraveNewWorldHelloTask",
+  "bounded_run": {
+    "frames": 3,
+    "success_marker": "BraveNewWorld hello-task: validation=requested/enabled errors=0 presented=3 ui=enabled"
+  },
+  "acceptance": [
+    "The consumer compiles without Anygine private or first-party App include paths.",
+    "The application presents exactly three frames with the public UI context enabled.",
+    "Required Vulkan validation reports zero errors."
+  ],
+  "verification": [
+    "./bnw test --engine-root <pinned-anygine-root>",
+    "./bnw run --engine-root <pinned-anygine-root>"
+  ]
+}

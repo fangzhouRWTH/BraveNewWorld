@@ -1,8 +1,8 @@
+build/
+compile_commands.json
+Config/LocalPaths.local
+.cache/
 __pycache__/
 *.py[cod]
-.venv/
-build/
-dist/
-*.egg-info/
-.coverage
-htmlcov/
+imgui.ini
+.DS_Store

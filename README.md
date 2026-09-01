@@ -1,46 +1,61 @@
 # BraveNewWorld
 
-BraveNewWorld 是一套面向控制理论、信号处理、运动学和机器人基础技术的示教、可视化与轻量仿真工具，也是 [JobSlayer](https://github.com/fangzhouRWTH/JobSlayer) 的外部实验测试床。
+BraveNewWorld 是 JobSlayer 的快速任务验证场：以
+[Anygine](https://github.com/fangzhouRWTH/Anygine) 为基础引擎，持续创建边界清晰、可独立构建、
+可运行、可验证的小规模原生 App。它不再承担网页端机电设备物理模拟产品的开发目标。
 
-BNW-0 提供第一个可运行主题：一阶系统/一阶低通滤波器的阶跃响应。浏览器 UI 与无头命令调用同一套确定性 Python 仿真内核。
+这个仓库是独立的顶层 CMake consumer，不复制 Anygine 源码，也不直接依赖引擎私有目录。
+当前固定 Anygine `main` 的 commit `28b4934c24fdad6b8f45b945a89a6ada51703f5d`，通过引擎已经验证的
+public build-tree targets 接入。
 
-## 快速开始
+## 当前最小闭环
 
-无需安装运行时依赖。需要 Python 3.11 或更高版本。
+首个 `hello-task` App 只验证五件事：
 
-Linux / macOS 源码仓库：
+1. BraveNewWorld 能在仓库外部注册固定版本的 Anygine；
+2. 只通过公共 `Anygine::*` targets 编译和链接；
+3. 能创建窗口、Vulkan backend、Renderer 与 UI context；
+4. 能运行固定 3 帧并输出机器可检查的结果；
+5. App manifest、引擎 pin、构建与测试可以由同一个入口重复执行。
+
+## 构建
+
+先按 Anygine 自身说明准备 Conan/CMake/Vulkan 依赖，然后从本仓库运行：
 
 ```bash
-./bnw check
-./bnw simulate --duration 5 --dt 0.05 --tau 0.8
-./bnw run-scenario scenarios/first-order-default.json
-./bnw ui --open-browser
+./bnw doctor --engine-root /absolute/path/to/Anygine
+./bnw configure --engine-root /absolute/path/to/Anygine
+./bnw build --engine-root /absolute/path/to/Anygine
+./bnw test --engine-root /absolute/path/to/Anygine
 ```
 
-Windows PowerShell 源码仓库：
+完整门禁：
 
-```powershell
-.\bnw.cmd check
-.\bnw.cmd simulate --duration 5 --dt 0.05 --tau 0.8
-.\bnw.cmd run-scenario scenarios\first-order-default.json
-.\bnw.cmd ui --open-browser
+```bash
+./bnw check --engine-root /absolute/path/to/Anygine
 ```
 
-安装包后，Windows 与 POSIX 统一使用 `bnw <command>`。源码启动器会优先使用仓库的 `.venv`；Windows 在没有 `.venv` 时依次使用 `py -3` 和 `python`。
+若固定 Anygine worktree 与 Conan toolchain 不在同一目录，可显式传入：
 
-UI 默认只监听 `127.0.0.1:8080`。打开终端显示的地址即可调节输入幅值、系统增益、时间常数、初值、仿真时长和步长；曲线、指标与导出的 JSON 均来自真实仿真响应。若 8080 端口已占用，可用 `bnw ui --port 0 --open-browser` 自动选择空闲端口。浏览器无法自动打开时，服务会继续运行并在终端打印可手工打开的地址。
-
-## 仓库结构
-
-```text
-src/brave_new_world/
-├── contracts.py          # 稳定的请求、轨迹和 demo 契约
-├── simulation/           # 确定性仿真内核
-├── demos/                # 主题登记
-└── ui/                   # loopback HTTP API 与模块化静态界面
-tests/                    # 无头数值与 API 集成测试
-scenarios/                # 版本化可复现实验输入
-docs/                     # 架构、ADR 和逐步开发记录
+```bash
+./bnw check \
+  --engine-root /absolute/path/to/pinned/Anygine \
+  --toolchain /absolute/path/to/anygine/build/conan/conan_toolchain.cmake
 ```
 
-远端仓库：<https://github.com/fangzhouRWTH/BraveNewWorld>
+具备显示设备和 Vulkan validation layer 时可运行 3 帧烟雾案例：
+
+```bash
+./bnw run --engine-root /absolute/path/to/Anygine
+```
+
+## 目录
+
+- `Config/Engine.json`：固定的 Anygine 来源与 commit；
+- `Config/Apps/*.json`：面向 JobSlayer 的小 App 任务/验证清单；
+- `Source/Apps/<App>`：薄应用实现；
+- `Tests/ManifestContract.py`：不依赖图形设备的结构契约检查；
+- `Scripts/BraveNewWorld.py`：跨平台 doctor/configure/build/test/run 入口；
+- `docs/`：当前架构、ADR 与追加式开发记录。
+
+详见 [架构说明](docs/ARCHITECTURE.md) 与 [开发记录](docs/DEVELOPMENT_LOG.md)。

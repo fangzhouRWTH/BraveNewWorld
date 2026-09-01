@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "engine_id": "anygine",
+  "repository": "https://github.com/fangzhouRWTH/Anygine.git",
+  "branch": "main",
+  "commit": "28b4934c24fdad6b8f45b945a89a6ada51703f5d",
+  "integration": "supported-build-tree-consumer",
+  "public_targets": [
+    "Anygine::Engine",
+    "Anygine::GraphicsVulkan",
+    "Anygine::RendererCore",
+    "Anygine::RuntimeAssets",
+    "Anygine::UI"
+  ]
+}
