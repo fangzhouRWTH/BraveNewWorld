@@ -88,3 +88,24 @@ recoverable from Git history and the offline pre-reset archive.
   commit, five public targets, and `passed=true`.
 - `git diff --check`: passed before the final evidence-only log append; the tracked diff and every
   untracked life-game deliverable were then inspected together with the changed-path list.
+
+## 2026-09-03 — Accept, validate, and publish the life-game App
+
+- JobSlayer integrated the exact reviewed patch as isolated checkpoint
+  `c60eb5eb6867d598c9393b5c4a043eb239b6e592`; local `main` then advanced from the tagged
+  `bnw-anygine-0` baseline by `git merge --ff-only`, without rewriting history.
+- The product owner explicitly authorized final completion and synchronization of both JobSlayer and
+  BraveNewWorld remotes. JobSlayer run `tmrun-life-game-20260903` reached revision 17,
+  `stage=completed`, with final node `gate_approved`; its persistent coordinator independently
+  reconciled to `stage=completed`.
+- Before final acceptance, all 24 run-linked immutable artifacts passed content verification and
+  verification report `tmverify-b14b8633e951493ab0056a1f9ce1a7d9` retained eight passing required
+  checks, no regression, and no unresolved risk.
+- Re-ran `./bnw check --engine-root /home/fangzhou/projects/Anygine/Anygine_JobSlayer --toolchain
+  /home/fangzhou/projects/Anygine/Anygine/build/conan/conan_toolchain.cmake`: manifest contract,
+  configure/build, and CTest passed; CTest reported 2/2 tests and 0 failures.
+- Re-ran `./bnw run` with the same engine/toolchain and `--jobs 4`: Required Vulkan validation was
+  enabled, Renderer and ImGui initialized, the application stopped normally, and the final marker was
+  `validation=requested/enabled errors=0 presented=12 generation=12 live=5 grid=24x24 ui=enabled`.
+- This publication contains the bounded Anygine App, its deterministic tests, contract, and docs. It
+  does not publish Anygine itself, generated build output, deployment credentials, or release assets.
