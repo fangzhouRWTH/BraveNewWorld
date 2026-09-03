@@ -8,15 +8,21 @@ BraveNewWorld 是 JobSlayer 的快速任务验证场：以
 当前固定 Anygine `main` 的 commit `28b4934c24fdad6b8f45b945a89a6ada51703f5d`，通过引擎已经验证的
 public build-tree targets 接入。
 
-## 当前最小闭环
+## 当前 App
 
-首个 `hello-task` App 只验证五件事：
+`hello-task` 继续作为最小的 3 帧 Engine/Vulkan/Renderer/UI 基线。默认运行入口现为
+`life-game`：一个 24×24 环面 Conway 生命游戏，规则为 B3/S23。其模型只使用 C++20 标准库，
+固定 seed 是五细胞 glider；`reset` 会恢复 seed、generation 0 和暂停状态。
 
-1. BraveNewWorld 能在仓库外部注册固定版本的 Anygine；
-2. 只通过公共 `Anygine::*` targets 编译和链接；
-3. 能创建窗口、Vulkan backend、Renderer 与 UI context；
-4. 能运行固定 3 帧并输出机器可检查的结果；
-5. App manifest、引擎 pin、构建与测试可以由同一个入口重复执行。
+原生 UI 显示完整细胞网格、generation 与 live count，并提供 `Pause`/`Resume`、
+`Single Step`、`Reset` 控件。无输入 smoke 会自动继续演化并在 12 个 presented frames 后退出；
+固定成功标记包含 Vulkan validation requested/enabled、`errors=0`、帧数以及生命游戏统计。
+
+不需要 Anygine 或图形设备的结构检查可单独运行：
+
+```bash
+./bnw contract
+```
 
 ## 构建
 
@@ -43,19 +49,23 @@ public build-tree targets 接入。
   --toolchain /absolute/path/to/anygine/build/conan/conan_toolchain.cmake
 ```
 
-具备显示设备和 Vulkan validation layer 时可运行 3 帧烟雾案例：
+具备显示设备和 Vulkan validation layer 时，默认入口会运行有界的 `life-game` smoke：
 
 ```bash
 ./bnw run --engine-root /absolute/path/to/Anygine
 ```
+
+该命令会构建所有 BraveNewWorld targets，并实际启动 `BraveNewWorldLifeGame`；不会回退到
+`hello-task`。模型 CTest 覆盖 blinker、glider、reset、pause/resume、single-step 和边界 wrap。
 
 ## 目录
 
 - `Config/Engine.json`：固定的 Anygine 来源与 commit；
 - `Config/Apps/*.json`：面向 JobSlayer 的小 App 任务/验证清单；
 - `Source/Apps/<App>`：薄应用实现；
-- `Tests/ManifestContract.py`：不依赖图形设备的结构契约检查；
-- `Scripts/BraveNewWorld.py`：跨平台 doctor/configure/build/test/run 入口；
+- `Source/Apps/LifeGame/Tests`：不依赖 GPU 的确定性模型测试；
+- `Tests/ManifestContract.py`：manifest、入口、public-target 边界与文档绑定检查；
+- `Scripts/BraveNewWorld.py`：跨平台 doctor/configure/build/test/run 入口，run 默认路由到 life-game；
 - `docs/`：当前架构、ADR 与追加式开发记录。
 
 详见 [架构说明](docs/ARCHITECTURE.md) 与 [开发记录](docs/DEVELOPMENT_LOG.md)。

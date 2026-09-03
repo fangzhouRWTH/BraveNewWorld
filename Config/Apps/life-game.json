@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0",
+  "app_id": "life-game",
+  "display_name": "Conway Life Game",
+  "purpose": "Exercise a deterministic native Conway model through the public Anygine Vulkan, renderer, and UI boundary.",
+  "cmake_target": "BraveNewWorldLifeGame",
+  "model_test_target": "BraveNewWorldLifeGameModelTests",
+  "entrypoint": "./bnw run",
+  "grid": {
+    "rows": 24,
+    "columns": 24,
+    "topology": "toroidal",
+    "rules": "B3/S23",
+    "seed": "fixed-glider"
+  },
+  "controls": [
+    "pause/resume",
+    "single-step",
+    "reset"
+  ],
+  "bounded_run": {
+    "frames": 12,
+    "requires_input": false,
+    "success_marker": "BraveNewWorld life-game: validation=requested/enabled errors=0 presented=12 generation=12 live=5 grid=24x24 ui=enabled"
+  },
+  "acceptance": [
+    "The pure C++20 model evolves a 24x24 toroidal grid under Conway B3/S23.",
+    "Deterministic tests cover blinker, glider, reset, pause/resume, single-step, and boundary wrap.",
+    "The public Anygine UI displays generation, live count, controls, and the complete cell grid.",
+    "The bounded Vulkan smoke exits after twelve presented frames without user input and reports zero validation errors."
+  ],
+  "verification": [
+    "./bnw contract",
+    "./bnw test --jobs 4",
+    "./bnw run --jobs 4"
+  ]
+}

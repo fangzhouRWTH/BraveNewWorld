@@ -53,3 +53,38 @@ recoverable from Git history and the offline pre-reset archive.
   reason for BraveNewWorld to reach into private targets.
 - `hello-task` is a build/runtime contract fixture rather than a user-facing experiment. The next
   JobSlayer trial should plan one genuinely small interactive App against this baseline.
+
+## 2026-09-03 — Implement life-game App node
+
+- Preserved the `e7bff4aceca5dee998d0db1dc1c50e4b935fabda` BraveNewWorld baseline, the existing
+  `hello-task`, and the Anygine pin in `Config/Engine.json`.
+- Added the unique `life-game` manifest and `BraveNewWorldLifeGame` target. Changed the source-controlled
+  `./bnw run` route to that executable while retaining `BraveNewWorldHelloTask` in the all-target build.
+- Added a pure C++20 24×24 toroidal Conway B3/S23 model with a deterministic glider seed, reset,
+  pause/resume, guarded advance, and single-step behavior.
+- Added a CPU-only model test target with deterministic cases for blinker, four-step glider movement,
+  reset, pause/resume and single-step, plus a blinker spanning both wrap boundaries.
+- Added an Anygine public-API adapter that requests Vulkan validation, renders a bounded 12-frame smoke,
+  and registers UI for generation, live count, the full cell grid, pause/resume, single-step and reset.
+- Expanded the manifest contract to bind both unique Apps, the default life-game launcher, exact public
+  `Anygine::*` target set, model/test semantics, smoke markers, documentation, and forbidden private or
+  network-fetch integration patterns.
+
+### Implementation-node verification boundary
+
+- `./bnw contract` is the authorized implementation check and does not require an external engine path.
+- This node did not access an operator-owned Anygine checkout or toolchain and did not run `./bnw test`
+  or `./bnw run`; those build/CTest/Vulkan observations belong to the separately authorized validation
+  node. Consequently, this entry does not claim compile, runtime, validation-layer, approval, or workflow
+  completion evidence.
+- Remaining next step: independent validation must run the injected platform variants of
+  `./bnw test --jobs 4` and `./bnw run --jobs 4`, inspect their structured output, and perform the
+  technical/human checkpoints owned by JobSlayer.
+
+### Observed implementation evidence
+
+- `./bnw contract`: passed and reported `app_ids=[hello-task, life-game]`,
+  `default_app_id=life-game`, `life_game_model=24x24-toroidal-B3/S23`, the unchanged pinned Anygine
+  commit, five public targets, and `passed=true`.
+- `git diff --check`: passed before the final evidence-only log append; the tracked diff and every
+  untracked life-game deliverable were then inspected together with the changed-path list.

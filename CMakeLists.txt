@@ -40,11 +40,18 @@ set(ANYGINE_BUILD_SHADERS ON CACHE BOOL "" FORCE)
 
 add_subdirectory("${ANYGINE_SOURCE_ROOT}" "${CMAKE_CURRENT_BINARY_DIR}/anygine")
 add_subdirectory(Source/Apps/HelloTask)
+add_subdirectory(Source/Apps/LifeGame)
 
 add_custom_target(BraveNewWorldBuildAll)
-add_dependencies(BraveNewWorldBuildAll BraveNewWorldHelloTask)
+add_dependencies(
+    BraveNewWorldBuildAll
+    BraveNewWorldHelloTask
+    BraveNewWorldLifeGame
+    BraveNewWorldLifeGameModelTests)
 
 enable_testing()
+add_test(NAME BraveNewWorldLifeGameModel COMMAND BraveNewWorldLifeGameModelTests)
+set_tests_properties(BraveNewWorldLifeGameModel PROPERTIES LABELS "life-game;model")
 find_package(Python3 3.11 REQUIRED COMPONENTS Interpreter)
 add_test(
     NAME BraveNewWorldManifestContract

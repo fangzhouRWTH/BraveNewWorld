@@ -122,7 +122,7 @@ def run_app(args: argparse.Namespace) -> None:
     build(args)
     suffix = ".exe" if os.name == "nt" else ""
     executable = (
-        build_dir(args) / "Source/Apps/HelloTask" / f"BraveNewWorldHelloTask{suffix}"
+        build_dir(args) / "Source/Apps/LifeGame" / f"BraveNewWorldLifeGame{suffix}"
     )
     if not executable.is_file():
         raise SystemExit(f"Built application is missing: {executable}")
